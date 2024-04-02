@@ -13,9 +13,10 @@ class FIRSTPROJECTP1_API UMyMovementComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere , Category = "Stat") float speed = 0.0f;
 	UPROPERTY(EditAnywhere) float progress = 0.0f;
+protected:
 	FVector from, destination;
+	UPROPERTY(EditAnywhere , Category = "Stat") float speed = 0.5f;
 
 
 public:	
@@ -28,5 +29,5 @@ public:
 	void Init();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void MoveToDestination();
-	void DrawDestinationDebug();
+	virtual void DrawDestinationDebug();
 };

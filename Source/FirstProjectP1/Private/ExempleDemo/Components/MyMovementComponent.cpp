@@ -12,8 +12,6 @@ void UMyMovementComponent::BeginPlay()
 	Init();
 }
 
-
-
 void UMyMovementComponent::Init()
 {
 	from = GetOwner()->GetActorLocation();
@@ -28,6 +26,7 @@ void UMyMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UMyMovementComponent::SetDestination(const FVector& _destination)
 {
+
 	destination = _destination;
 	LOG_COLOR_TIME("Destination Set : " + destination.ToString(), Red, 6);
 }
@@ -36,9 +35,10 @@ void UMyMovementComponent::MoveToDestination()
 {
 	// LA BASE DE L'ALGO
 	progress += DELTATIME * speed;
-	progress = FMath::Clamp(progress, 1, 0);
+	progress = FMath::Clamp(progress, 0, 1);
 	const FVector& _position = FMath::Lerp(from, destination, progress);
 	GetOwner()->SetActorLocation(_position);
+//	FVector::Distance();
 }
 
 void UMyMovementComponent::DrawDestinationDebug()
