@@ -7,6 +7,7 @@
 #include <Camera/CameraComponent.h>
 #include <GameFramework/SpringArmComponent.h>
 #include <InputMappingContext.h>
+#include "Components/SwitchActorComponent.h"
 #include <Components/SwitchActorComponent.h>
 
 
@@ -24,9 +25,11 @@ class SWITCHCHARACTER_API ATManCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, Category = "Character Input") TObjectPtr<UInputAction> charMovement = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Character Input") TObjectPtr<UInputAction> charRotation = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Character Input") TObjectPtr<UInputAction> charJump = nullptr;
-	UPROPERTY(EditAnywhere, Category = "Character Input") TObjectPtr<UInputAction> charSwitch = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Character Input") TObjectPtr<UInputAction> switchAction = nullptr;
 
-	TObjectPtr<USwitchActorComponent> switchComponent = nullptr;
+
+	UPROPERTY(EditAnywhere) TObjectPtr<USwitchActorComponent> switcher = nullptr;
+	//TObjectPtr<USwitchActorComponent> switchComponent = nullptr;
 
 public:
 	ATManCharacter();

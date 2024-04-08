@@ -14,6 +14,7 @@ class SWITCHCHARACTER_API UFollowActorComponent : public UActorComponent
 
 	FVector from, to;
 	UPROPERTY(EditAnywhere, Category = "Stat") float speed = 0.5f;
+	UPROPERTY(EditAnywhere, Category = "Stat") int range = 300.0f;
 	UPROPERTY(VisibleAnywhere) float progress = 0.0f;
 
 public:	
@@ -29,5 +30,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void SetDestination(const FVector& _destination);
 	virtual void MoveToDestination();
+
+	void FollowTarget();
+	virtual bool IsAtRange(const TObjectPtr<AActor> _actor) const;
 	void Init();
 };

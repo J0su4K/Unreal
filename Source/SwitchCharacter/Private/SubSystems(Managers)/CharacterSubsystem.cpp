@@ -7,14 +7,14 @@
 
 void UCharacterSubsystem::AddNewCharacter(TObjectPtr<ATManCharacter> _character)
 {
-	LOG("Vous ajouter un character ");
-	characters.Add(_character);
+	//LOG("Vous ajouter un character ");
+	//characters.Add(_character);
 
 
-	TObjectPtr<UPawnSubsystem> _pawnManager = GetWorld()->GetGameInstance()->GetSubsystem<UPawnSubsystem>();
-	if (!_pawnManager) return;
-	LOG("Vous ajouter aussi son Pawn ");
-	_pawnManager->AddNewPawn(_character);
+	//TObjectPtr<UPawnSubsystem> _pawnManager = GetWorld()->GetGameInstance()->GetSubsystem<UPawnSubsystem>();
+	//if (!_pawnManager) return;
+	//LOG("Vous ajouter aussi son Pawn ");
+	//_pawnManager->AddPawn(_character);
 }
 
 void UCharacterSubsystem::RemoveAll()
