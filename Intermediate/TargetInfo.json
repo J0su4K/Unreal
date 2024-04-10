@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "SwitchCharacter",
+			"Path": "..\\Source\\SwitchCharacter.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "SwitchCharacterEditor",
+			"Path": "..\\Source\\SwitchCharacterEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}
