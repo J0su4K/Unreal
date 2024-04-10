@@ -3,6 +3,7 @@
 
 #include "Components/SwitchActorComponent.h"
 #include <SubSystems(Managers)/PawnSubsystem.h>
+#include <Utils/Util.h>
 
 // Sets default values for this component's properties
 USwitchActorComponent::USwitchActorComponent()
@@ -14,28 +15,35 @@ USwitchActorComponent::USwitchActorComponent()
 	// ...
 }
 
-void USwitchActorComponent::SwitchActor()
+//void USwitchActorComponent::SwitchActor()
+//{
+//	TObjectPtr<UPawnSubsystem> _characterPawn = GetWorld()->GetGameInstance()->GetSubsystem<UPawnSubsystem>();
+//	_characterPawn->SwitchPawn();
+//}
+
+void USwitchActorComponent::Register()
 {
-	TObjectPtr<UPawnSubsystem> _characterPawn = GetWorld()->GetGameInstance()->GetSubsystem<UPawnSubsystem>();
-	_characterPawn->SwitchPawn();
+	TObjectPtr<APawn> _pawn = Cast < APawn > (GetOwner());
+	if (!_pawn)return;
+	LOG("ADD");
+	GetWorld()->GetGameInstance()->GetSubsystem<UPawnSubsystem>()->AddPawn(nameId , _pawn);
 }
 
 
-// Called when the game starts
+void USwitchActorComponent::Switch()
+{
+	GetWorld()->GetGameInstance()->GetSubsystem<UPawnSubsystem>()->SwitchTo(SwitchToId);
+}
+
 void USwitchActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
+	Register();
 }
 
 
-// Called every frame
 void USwitchActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 

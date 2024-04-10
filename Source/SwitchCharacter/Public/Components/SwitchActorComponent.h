@@ -11,12 +11,20 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SWITCHCHARACTER_API USwitchActorComponent : public UActorComponent
 {
 	GENERATED_BODY()
+	UPROPERTY(EditAnywhere , Category = "Pawn control unique name ") FString nameId = "Pawn";
+	UPROPERTY(EditAnywhere, Category = "Pawn control unique name ") FString SwitchToId = "";
 
 public:	
 	// Sets default values for this component's properties
 	USwitchActorComponent();
 
 	void SwitchActor();
+
+	void Register();
+
+
+
+	void Switch();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

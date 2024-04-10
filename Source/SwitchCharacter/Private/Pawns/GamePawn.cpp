@@ -25,7 +25,7 @@ void AGamePawn::Register()
 
 	if (!_characterManager) return;
 
-	_characterManager->AddNewPawn(this);
+	//_characterManager->AddPawn(this);
 }
 
 // Called every frame

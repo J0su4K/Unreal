@@ -8,10 +8,14 @@
 AFollowerPawn::AFollowerPawn()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
 
-	follow = CreateDefaultSubobject<UFollowActorComponent>("Follow");
-	AddOwnedComponent(follow);
+	
+	meshRoot = CreateDefaultSubobject<UStaticMeshComponent>("Root");
+
+	RootComponent = meshRoot;
+
+	//follow = CreateDefaultSubobject<UFollowActorComponent>("Follow");
+	//AddOwnedComponent(follow);
 
 	springArm = CreateDefaultSubobject<USpringArmComponent>("Arm");
 	camera = CreateDefaultSubobject<UCameraComponent>("Camera");
@@ -21,6 +25,14 @@ AFollowerPawn::AFollowerPawn()
 
 	floating = CreateDefaultSubobject<UFloatingPawnMovement>("Floating");
 	AddOwnedComponent(floating);
+
+
+
+	switcher = CreateDefaultSubobject<USwitchActorComponent>("Switcher");
+	AddOwnedComponent(switcher);
+
+	bUseControllerRotationYaw = true;
+	//springArm_>bUs
 }
 
 void AFollowerPawn::BeginPlay()
@@ -30,22 +42,25 @@ void AFollowerPawn::BeginPlay()
 
 void AFollowerPawn::InitInputSystem()
 {
-	TObjectPtr<UEnhancedInputLocalPlayerSubsystem> _inputSystem = GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem< UEnhancedInputLocalPlayerSubsystem>();
-	if (_inputSystem)
-	{
-		_inputSystem->AddMappingContext(pawnMapping, 0);
-	}
+	// GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->ClearAllMapping
+
+	//TObjectPtr<UEnhancedInputLocalPlayerSubsystem> _inputSystem = GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	//if (_inputSystem)
+	//{
+	//_inputSystem->ClearAllMappings();
+	//_inputSystem->AddMappingContext(pawnMapping, 0);
+	//}
+	GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->AddMappingContext(pawnMapping, 0);
 }
 
-void AFollowerPawn::BindAction()
+void AFollowerPawn::BindAction(class UInputComponent* PlayerInputComponent)
 {
-	TObjectPtr<UEnhancedInputComponent> _input = Cast<UEnhancedInputComponent>(GetWorld()->GetFirstPlayerController()->InputComponent);
+	TObjectPtr<UEnhancedInputComponent> _input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	if (_input)
 	{
-		_input->BindAction(charMovement, ETriggerEvent::Triggered, this, &AFollowerPawn::Move);
-		_input->BindAction(charRotation, ETriggerEvent::Triggered, this, &AFollowerPawn::Rotation);
-		_input->BindAction(charJump, ETriggerEvent::Triggered, this, &AFollowerPawn::Jumping);
-		_input->BindAction(charSwitch, ETriggerEvent::Completed, this, &AFollowerPawn::SwitchCharacter);
+		_input->BindAction(movementAction, ETriggerEvent::Triggered, this, &AFollowerPawn::Move);
+		_input->BindAction(rotationAction, ETriggerEvent::Triggered, this, &AFollowerPawn::Rotation);
+		_input->BindAction(switchAction, ETriggerEvent::Started, switcher.Get(), &USwitchActorComponent::Switch);
 	}
 }
 
@@ -53,7 +68,8 @@ void AFollowerPawn::Move(const FInputActionInstance& _input)
 {
 	const FVector2D _axis = _input.GetValue().Get<FVector2D>();
 	AddMovementInput(GetActorRightVector() * _axis.X + GetActorForwardVector() * _axis.Y);
-	LOG("SESE");
+	isPossess = true;
+	//LOG("SESE");
 }
 
 void AFollowerPawn::Rotation(const FInputActionInstance& _input)
@@ -61,11 +77,7 @@ void AFollowerPawn::Rotation(const FInputActionInstance& _input)
 	const FVector2D _axis = _input.GetValue().Get<FVector2D>();
 	AddControllerYawInput(_axis.X);
 	AddControllerPitchInput(_axis.Y);
-}
-
-void AFollowerPawn::Jumping()
-{
-	//Jump();
+	isPossess = true;
 }
 
 void AFollowerPawn::SwitchCharacter()
@@ -75,23 +87,23 @@ void AFollowerPawn::SwitchCharacter()
 
 void AFollowerPawn::Follow()
 {
-	// if (isPossess) return;
-	TObjectPtr<UCharacterSubsystem> _characterManager = GetWorld()->GetGameInstance()->GetSubsystem<UCharacterSubsystem>();
-	TArray<TObjectPtr<ATManCharacter>> _characters = _characterManager->GetCharacters();
-	follow->SetDestination(_characters[0]->GetActorLocation() + range);
+	//if (isPossess) return;
+	//TObjectPtr<UCharacterSubsystem> _characterManager = GetWorld()->GetGameInstance()->GetSubsystem<UCharacterSubsystem>();
+	//TArray<TObjectPtr<ATManCharacter>> _characters = _characterManager->GetCharacters();
+	//follow->SetDestination(_characters[0]->GetActorLocation() + range);
 }
 
 void AFollowerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	Follow();
+	// Follow();
 }
 
 void AFollowerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	InitInputSystem();
-	BindAction();
+	BindAction(PlayerInputComponent);
 }
 
 
