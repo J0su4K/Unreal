@@ -19,21 +19,34 @@ ATManCharacter::ATManCharacter()
 	springArm->SetupAttachment(RootComponent);
 	camera->SetupAttachment(springArm);
 
-	//switchComponent = CreateDefaultSubobject<USwitchActorComponent>("Switch");
-	//AddOwnedComponent(switchComponent);
-
-
 
 	switcher = CreateDefaultSubobject<USwitchActorComponent>("Switcher");
 	AddOwnedComponent(switcher);
+
+
+	stats = CreateDefaultSubobject<UCharacterStatsComponent>("Stats");
+
+	AddOwnedComponent(stats);
 }
+
+//UCharacterStatsComponent* ATManCharacter::GetStats()
+//{
+//	return stats;
+//}
+
 
 // Called when the game starts or when spawned
 void ATManCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	Register();
+	Init();
 }
+
+//TObjectPtr<UCharacterStatsComponent> ATManCharacter::GetStats()
+//{
+//	return stats;
+//}
 
 void ATManCharacter::InitInputSystem()
 {
@@ -75,8 +88,6 @@ void ATManCharacter::Rotation(const FInputActionInstance& _input)
 void ATManCharacter::Jumping()
 {
 	Jump();
-
-
 }
 
 void ATManCharacter::SwitchCharacter()
@@ -89,11 +100,17 @@ void ATManCharacter::SwitchCharacter()
 //	switchComponent->SwitchActor();
 }
 
+void ATManCharacter::UpdateTimer()
+{
+	//timer  DELTATIME;
+}
+
 
 // Called every frame
 void ATManCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//LOG_COLOR_TIME("OK" , Red , 1.0);
 }
 
 void ATManCharacter::Register()
@@ -111,6 +128,19 @@ void ATManCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	InitInputSystem();
 	BindAction();
+}
+
+void ATManCharacter::Init()
+{
+	if (stats)
+	{
+		stats->onDie.AddDynamic(this, &ATManCharacter::OnDiePlayer);
+	}
+}
+
+void ATManCharacter::OnDiePlayer()
+{
+	GetWorld()->GetFirstPlayerController()->DisableInput(Cast<APlayerController>(GetController()));
 }
 
 

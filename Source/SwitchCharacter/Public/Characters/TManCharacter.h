@@ -9,6 +9,7 @@
 #include <InputMappingContext.h>
 #include "Components/SwitchActorComponent.h"
 #include <Components/SwitchActorComponent.h>
+#include <Components/CharacterStatsComponent.h>
 
 
 #include "TManCharacter.generated.h"
@@ -29,11 +30,14 @@ class SWITCHCHARACTER_API ATManCharacter : public ACharacter
 
 
 	UPROPERTY(EditAnywhere) TObjectPtr<USwitchActorComponent> switcher = nullptr;
-	//TObjectPtr<USwitchActorComponent> switchComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, BluePrintReadWrite ,Category = "Character Stats" , meta = (AllowPrivateAccess)) TObjectPtr<UCharacterStatsComponent> stats = nullptr;
+	//UPROPERTY(EditAnywhere , BluePrintreadWrite , Category = "Character Stats " , meta ) FTimerHandle  timer;
+	
 
 public:
 	ATManCharacter();
-
+	//UFUNCTION(BluePrintPure) UCharacterStatsComponent* GetStats();
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitInputSystem();
@@ -42,6 +46,8 @@ protected:
 	void Rotation(const FInputActionInstance& _input);
 	void Jumping();
 	void SwitchCharacter();
+	//UFUNCTION() void LostLife();
+	void UpdateTimer();
 
 public:
 
@@ -50,4 +56,6 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void Init();
+	UFUNCTION() void OnDiePlayer();
 };
