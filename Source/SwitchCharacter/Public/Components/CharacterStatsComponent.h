@@ -13,8 +13,9 @@ class SWITCHCHARACTER_API UCharacterStatsComponent : public UActorComponent
 	GENERATED_BODY()
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDie);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStatUpdate);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAddLife, const int&, _life);
-
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDamage, const int&, _damage);
 
 	UPROPERTY(Editanywhere, BluePrintReadWrite, Category = "Stats|Life", meta = (AllowPrivateAccess)) bool isDead = false;
 	UPROPERTY(Editanywhere, BluePrintReadWrite ,Category = "Stats|Life" , meta = (AllowPrivateAccess , UIMin = 0, ClampMin = 0, UIMax = 100, ClampMax = 100)) int life = 100;
@@ -23,8 +24,9 @@ class SWITCHCHARACTER_API UCharacterStatsComponent : public UActorComponent
 public:	
 	
 	UPROPERTY(Blueprintassignable , BluePrintCallable)FOnDie onDie;
-	FOnAddLife onAddLife;
-	
+	UPROPERTY(Blueprintassignable, BluePrintCallable)FOnAddLife onAddLife;
+	UPROPERTY(Blueprintassignable, BluePrintCallable)FOnDamage onDamage;
+	UPROPERTY(Blueprintassignable, BluePrintCallable) FOnStatUpdate onStatUpdate;
 	//FORCEINLINE FOnDie& OnDie() { return onDie; }
 
 	UCharacterStatsComponent();

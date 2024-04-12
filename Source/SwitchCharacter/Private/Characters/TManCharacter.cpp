@@ -7,6 +7,8 @@
 #include "SubSystems(Managers)/CharacterSubsystem.h"
 #include <SubSystems(Managers)/PawnSubsystem.h>
 #include <Utils/Util.h>
+#include <SubSystems(Managers)/SaveGameSubsystem.h>
+#include <Kismet/GameplayStatics.h>
 // Sets default values
 ATManCharacter::ATManCharacter()
 {
@@ -39,6 +41,7 @@ ATManCharacter::ATManCharacter()
 void ATManCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	Reload();
 	Register();
 	Init();
 }
@@ -56,11 +59,13 @@ void ATManCharacter::InitInputSystem()
 		_inputSystem->ClearAllMappings();
 		_inputSystem->AddMappingContext(characterMapping, 0);
 	}
+
 }
 
 void ATManCharacter::BindAction()
 {
 	TObjectPtr<UEnhancedInputComponent> _input = Cast<UEnhancedInputComponent>(GetWorld()->GetFirstPlayerController()->InputComponent);
+	//input = Cast<UEnhancedInputComponent>(GetWorld()->GetFirstPlayerController()->InputComponent);
 	if (_input)
 	{
 		_input->BindAction(charMovement, ETriggerEvent::Triggered, this, &ATManCharacter::Move);
@@ -68,7 +73,11 @@ void ATManCharacter::BindAction()
 		_input->BindAction(charJump, ETriggerEvent::Triggered, this, &ATManCharacter::Jumping);
 		//_input->BindAction(charSwitch, ETriggerEvent::Triggered , switchComponent, &USwitchActorComponent::SwitchActor);
 		_input->BindAction(switchAction, ETriggerEvent::Started, switcher.Get(), &USwitchActorComponent::Switch);
+
+		//input->RemoveActionEventBinding(0);
 	}
+
+	//input->
 }
 
 void ATManCharacter::Move(const FInputActionInstance& _input)
@@ -105,6 +114,11 @@ void ATManCharacter::UpdateTimer()
 	//timer  DELTATIME;
 }
 
+void ATManCharacter::SwitchLevel()
+{
+	UGameplayStatics::OpenLevel(this, levelName);
+}
+
 
 // Called every frame
 void ATManCharacter::Tick(float DeltaTime)
@@ -135,12 +149,63 @@ void ATManCharacter::Init()
 	if (stats)
 	{
 		stats->onDie.AddDynamic(this, &ATManCharacter::OnDiePlayer);
+		stats->onDie.AddDynamic(this, &ATManCharacter::OnStartRespawnPlayer);
+		stats->onStatUpdate.AddDynamic(this, &ATManCharacter::SaveStats);
 	}
 }
 
 void ATManCharacter::OnDiePlayer()
 {
 	GetWorld()->GetFirstPlayerController()->DisableInput(Cast<APlayerController>(GetController()));
+}
+
+void ATManCharacter::OnStartRespawnPlayer()
+{
+	FTimerHandle _timer;
+	GetWorldTimerManager().SetTimer(_timer, this, &ATManCharacter::RespawnPlayer, respawnTime , false);
+}
+
+void ATManCharacter::RespawnPlayer()
+{
+	GetWorld()->GetFirstPlayerController()->EnableInput(Cast<APlayerController>(GetController()));
+	stats->RegenLife();
+}
+
+void ATManCharacter::InitSwitchLevelInput()
+{
+	inputSwitch = Cast<UEnhancedInputComponent>(GetWorld()->GetFirstPlayerController()->InputComponent);
+	inputSwitch->BindAction(switchLevelAction, ETriggerEvent::Triggered, this, &ATManCharacter::SwitchLevel);
+}
+
+void ATManCharacter::DeleteSwitchLevelInput()
+{
+	inputSwitch->RemoveActionEventBinding(4);
+}
+
+void ATManCharacter::SaveStats()
+{
+	TObjectPtr<USaveGameSubsystem> _save = GetWorld()->GetGameInstance()->GetSubsystem<USaveGameSubsystem>();
+
+	if (_save)
+	{
+		_save->GetPlayerSave()->SavePlayerStats(stats);
+		_save->SaveGame();
+		LOG("TU a enrengistrer tes stats !");
+		
+	}
+}
+
+void ATManCharacter::Reload()
+{
+	TObjectPtr<USaveGameSubsystem> _save = GetWorld()->GetGameInstance()->GetSubsystem<USaveGameSubsystem>();
+
+	if (_save)
+	{
+		_save->LoadGame();
+		_save->GetPlayerSave()->SetPlayerStat(stats);
+		LOG("TU a enrengistrer tes stats !");
+
+	}
 }
 
 

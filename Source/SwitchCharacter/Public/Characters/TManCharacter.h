@@ -27,18 +27,27 @@ class SWITCHCHARACTER_API ATManCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, Category = "Character Input") TObjectPtr<UInputAction> charRotation = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Character Input") TObjectPtr<UInputAction> charJump = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Character Input") TObjectPtr<UInputAction> switchAction = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Character Input") TObjectPtr<UInputAction> switchLevelAction = nullptr;
 
+	FName levelName = "";
+
+	TObjectPtr<UEnhancedInputComponent>  inputSwitch;
 
 	UPROPERTY(EditAnywhere) TObjectPtr<USwitchActorComponent> switcher = nullptr;
 
 	UPROPERTY(EditAnywhere, BluePrintReadWrite ,Category = "Character Stats" , meta = (AllowPrivateAccess)) TObjectPtr<UCharacterStatsComponent> stats = nullptr;
-	//UPROPERTY(EditAnywhere , BluePrintreadWrite , Category = "Character Stats " , meta ) FTimerHandle  timer;
+
+
+	UPROPERTY(EditAnywhere, BluePrintReadWrite, Category = "Character Stats", meta = (AllowPrivateAccess)) int respawnTime = 5;
 	
 
 public:
 	ATManCharacter();
-	//UFUNCTION(BluePrintPure) UCharacterStatsComponent* GetStats();
+	UFUNCTION(BluePrintPure) UCharacterStatsComponent* GetStats() { return stats;  };
+
+	FORCEINLINE void SetLevelDestination(const FName& _newDestination) { levelName = _newDestination; };
 protected:
+
 	virtual void BeginPlay() override;
 	virtual void InitInputSystem();
 	virtual void BindAction();
@@ -46,16 +55,21 @@ protected:
 	void Rotation(const FInputActionInstance& _input);
 	void Jumping();
 	void SwitchCharacter();
-	//UFUNCTION() void LostLife();
 	void UpdateTimer();
-
 public:
-
 	virtual void Tick(float DeltaTime) override;
 	virtual void Register();
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	void Init();
+	void RespawnPlayer();
+	void InitSwitchLevelInput();
+	void DeleteSwitchLevelInput();
+	void SwitchLevel();
+
+
 	UFUNCTION() void OnDiePlayer();
+	UFUNCTION() void OnStartRespawnPlayer();
+	UFUNCTION() void SaveStats();
+	UFUNCTION() void Reload();
+	//UFUNCTION() void LostLife();
 };
